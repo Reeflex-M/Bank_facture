@@ -305,4 +305,20 @@ public class PrestationManager {
   public List<Prestation> getPrestations() {
     return chargerPrestationsDepuisBase();
   }
+
+  /**
+   * Méthode publique pour sauvegarder une formation (utilisée par l'interface
+   * graphique)
+   */
+  public boolean sauvegarderFormation(Formation formation) {
+    return sauvegarderFormationEnBase(formation);
+  }
+
+  /**
+   * Méthode publique pour sauvegarder une consultation (utilisée par l'interface
+   * graphique)
+   */
+  public boolean sauvegarderConsultation(Consultation consultation) {
+    return sauvegarderConsultationEnBase(consultation);
+  }
 }

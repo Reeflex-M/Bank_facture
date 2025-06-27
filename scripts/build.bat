@@ -22,9 +22,9 @@ REM Créer le dossier build s'il n'existe pas
 echo [INFO] Création du dossier build...
 if not exist "build" mkdir build
 
-REM Compilation des sources Java
+REM Compilation des sources Java (version console seulement)
 echo [INFO] Compilation des sources src\ vers build\...
-javac -cp "lib\mysql-connector-java.jar;src" -d build src\*.java
+javac -cp "lib\mysql-connector-java.jar;src" -d build src\Main.java src\AuthManager.java src\Consultation.java src\DatabaseManager.java src\Formation.java src\Prestation.java src\PrestationManager.java
 
 if %errorlevel% equ 0 (
     echo [OK] Compilation réussie !
