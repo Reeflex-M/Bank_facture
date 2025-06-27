@@ -321,4 +321,35 @@ public class PrestationManager {
   public boolean sauvegarderConsultation(Consultation consultation) {
     return sauvegarderConsultationEnBase(consultation);
   }
+
+  public List<Prestation> getPrestationsParMois(int mois, int annee) {
+    List<Prestation> result = new ArrayList<>();
+    for (Prestation p : getPrestations()) {
+      if (p.getDate().getMonthValue() == mois && p.getDate().getYear() == annee) {
+        result.add(p);
+      }
+    }
+    return result;
+  }
+
+  public List<Prestation> getPrestationsParAnnee(int annee) {
+    List<Prestation> result = new ArrayList<>();
+    for (Prestation p : getPrestations()) {
+      if (p.getDate().getYear() == annee) {
+        result.add(p);
+      }
+    }
+    return result;
+  }
+
+  public List<Prestation> getPrestationsParPeriode(java.time.LocalDate debut, java.time.LocalDate fin) {
+    List<Prestation> result = new ArrayList<>();
+    for (Prestation p : getPrestations()) {
+      if ((p.getDate().isEqual(debut) || p.getDate().isAfter(debut)) &&
+          (p.getDate().isEqual(fin) || p.getDate().isBefore(fin))) {
+        result.add(p);
+      }
+    }
+    return result;
+  }
 }

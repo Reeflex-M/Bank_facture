@@ -188,6 +188,7 @@ public class MainWindow extends JFrame {
   JButton newPrestationBtn = createMenuButton("Nouvelle Prestation", "Ajouter une formation ou consultation");
   JButton viewPrestationsBtn = createMenuButton("Voir les Prestations", "Afficher toutes les prestations");
   JButton statisticsBtn = createMenuButton("Statistiques", "Voir les statistiques financieres");
+  JButton bilanPdfBtn = createMenuButton("Bilan chiffre d'affaires (PDF)", "Générer un PDF du chiffre d'affaires sur une période");
   JButton logoutBtn = createMenuButton("Deconnexion", "Se deconnecter de l'application");
 
   gbc.gridx = 0;
@@ -201,12 +202,16 @@ public class MainWindow extends JFrame {
   menuPanel.add(statisticsBtn, gbc);
 
   gbc.gridy = 3;
+  menuPanel.add(bilanPdfBtn, gbc);
+
+  gbc.gridy = 4;
   menuPanel.add(logoutBtn, gbc);
 
   // Actions des boutons
   newPrestationBtn.addActionListener(e -> showPrestationTypeSelection());
   viewPrestationsBtn.addActionListener(e -> showPrestationsList());
   statisticsBtn.addActionListener(e -> showStatistics());
+  bilanPdfBtn.addActionListener(e -> showBilanPdfDialog());
   logoutBtn.addActionListener(e -> {
    isAuthenticated = false;
    showLoginPanel();
@@ -355,6 +360,114 @@ public class MainWindow extends JFrame {
    showStatus("Consultation ajoutee avec succes !", SUCCESS_COLOR);
    showMainMenu();
   }
+ }
+
+ private void showBilanPdfDialog() {
+     JPanel panel = new JPanel(new GridBagLayout());
+     panel.setBackground(BACKGROUND_COLOR);
+     GridBagConstraints gbc = new GridBagConstraints();
+     gbc.insets = new Insets(10, 10, 10, 10);
+     gbc.fill = GridBagConstraints.HORIZONTAL;
+
+     JLabel label = new JLabel("Choisissez la période du bilan :");
+     label.setFont(new Font("Arial", Font.BOLD, 14));
+     label.setForeground(SECONDARY_COLOR);
+     gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+     panel.add(label, gbc);
+
+     String[] periodes = {"Mensuel", "Annuel", "Personnalisé"};
+     JComboBox<String> periodeBox = new JComboBox<>(periodes);
+     gbc.gridy = 1; gbc.gridwidth = 2;
+     panel.add(periodeBox, gbc);
+
+     JLabel moisLabel = new JLabel("Mois (1-12) :");
+     JTextField moisField = new JTextField(2);
+     JLabel anneeLabel = new JLabel("Année :");
+     JTextField anneeField = new JTextField(4);
+     JLabel debutLabel = new JLabel("Début (yyyy-MM-dd) :");
+     JTextField debutField = new JTextField(10);
+     JLabel finLabel = new JLabel("Fin (yyyy-MM-dd) :");
+     JTextField finField = new JTextField(10);
+
+     gbc.gridy = 2; gbc.gridwidth = 1; gbc.gridx = 0;
+     panel.add(moisLabel, gbc);
+     gbc.gridx = 1;
+     panel.add(moisField, gbc);
+     gbc.gridy = 3; gbc.gridx = 0;
+     panel.add(anneeLabel, gbc);
+     gbc.gridx = 1;
+     panel.add(anneeField, gbc);
+
+     // Champs personnalisés cachés par défaut
+     debutLabel.setVisible(false); debutField.setVisible(false);
+     finLabel.setVisible(false); finField.setVisible(false);
+
+     gbc.gridy = 4; gbc.gridx = 0;
+     panel.add(debutLabel, gbc);
+     gbc.gridx = 1;
+     panel.add(debutField, gbc);
+     gbc.gridy = 5; gbc.gridx = 0;
+     panel.add(finLabel, gbc);
+     gbc.gridx = 1;
+     panel.add(finField, gbc);
+
+     periodeBox.addActionListener(e -> {
+         String choix = (String) periodeBox.getSelectedItem();
+         boolean isPerso = "Personnalisé".equals(choix);
+         moisLabel.setVisible("Mensuel".equals(choix));
+         moisField.setVisible("Mensuel".equals(choix));
+         anneeLabel.setVisible(!"Personnalisé".equals(choix));
+         anneeField.setVisible(!"Personnalisé".equals(choix));
+         debutLabel.setVisible(isPerso); debutField.setVisible(isPerso);
+         finLabel.setVisible(isPerso); finField.setVisible(isPerso);
+         panel.revalidate(); panel.repaint();
+     });
+     periodeBox.setSelectedIndex(0);
+
+     int result = JOptionPane.showConfirmDialog(this, panel, "Générer le bilan PDF", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+     if (result == JOptionPane.OK_OPTION) {
+         String choix = (String) periodeBox.getSelectedItem();
+         List<Prestation> prestations;
+         String periodeText = "";
+         double total = 0;
+         try {
+             if ("Mensuel".equals(choix)) {
+                 int mois = Integer.parseInt(moisField.getText().trim());
+                 int annee = Integer.parseInt(anneeField.getText().trim());
+                 prestations = prestationManager.getPrestationsParMois(mois, annee);
+                 periodeText = String.format("%02d/%d", mois, annee);
+             } else if ("Annuel".equals(choix)) {
+                 int annee = Integer.parseInt(anneeField.getText().trim());
+                 prestations = prestationManager.getPrestationsParAnnee(annee);
+                 periodeText = String.valueOf(annee);
+             } else {
+                 LocalDate debut = LocalDate.parse(debutField.getText().trim());
+                 LocalDate fin = LocalDate.parse(finField.getText().trim());
+                 prestations = prestationManager.getPrestationsParPeriode(debut, fin);
+                 periodeText = debut + " au " + fin;
+             }
+             for (Prestation p : prestations) total += p.calculerMontant();
+             if (prestations.isEmpty()) {
+                 showStatus("Aucune prestation sur la période.", ERROR_COLOR);
+                 return;
+             }
+             JFileChooser fileChooser = new JFileChooser();
+             fileChooser.setDialogTitle("Enregistrer le bilan PDF");
+             fileChooser.setSelectedFile(new java.io.File("bilan-" + periodeText.replaceAll("[ /]", "-") + ".pdf"));
+             int userSelection = fileChooser.showSaveDialog(this);
+             if (userSelection == JFileChooser.APPROVE_OPTION) {
+                 String chemin = fileChooser.getSelectedFile().getAbsolutePath();
+                 src.gui.BilanPdfGenerator.genererBilan(prestations, periodeText, total, chemin);
+                 showStatus("Bilan PDF généré avec succès !", SUCCESS_COLOR);
+                 int open = JOptionPane.showConfirmDialog(this, "Ouvrir le PDF généré ?", "Bilan généré", JOptionPane.YES_NO_OPTION);
+                 if (open == JOptionPane.YES_OPTION) {
+                     try { java.awt.Desktop.getDesktop().open(new java.io.File(chemin)); } catch (Exception ex) { }
+                 }
+             }
+         } catch (Exception ex) {
+             showStatus("Erreur lors de la génération : " + ex.getMessage(), ERROR_COLOR);
+         }
+     }
  }
 
  // Methodes utilitaires pour creer des composants styles
@@ -525,5 +638,9 @@ public class MainWindow extends JFrame {
  private boolean authenticateUser(String login, String password) {
   // Implementation simplifiee - utilise les identifiants de demonstration
   return "entrepreneur".equals(login) && "facture2024".equals(password);
+ }
+
+ public static void main(String[] args) {
+  javax.swing.SwingUtilities.invokeLater(() -> new MainWindow().setVisible(true));
  }
 }
