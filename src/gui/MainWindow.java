@@ -187,6 +187,7 @@ public class MainWindow extends JFrame {
   // Boutons du menu
   JButton newPrestationBtn = createMenuButton("Nouvelle Prestation", "Ajouter une formation ou consultation");
   JButton viewPrestationsBtn = createMenuButton("Voir les Prestations", "Afficher toutes les prestations");
+  JButton generateInvoicesBtn = createMenuButton("Generer Factures", "Generer les factures mensuelles par client");
   JButton statisticsBtn = createMenuButton("Statistiques", "Voir les statistiques financieres");
   JButton logoutBtn = createMenuButton("Deconnexion", "Se deconnecter de l'application");
 
@@ -198,14 +199,18 @@ public class MainWindow extends JFrame {
   menuPanel.add(viewPrestationsBtn, gbc);
 
   gbc.gridy = 2;
-  menuPanel.add(statisticsBtn, gbc);
+  menuPanel.add(generateInvoicesBtn, gbc);
 
   gbc.gridy = 3;
+  menuPanel.add(statisticsBtn, gbc);
+
+  gbc.gridy = 4;
   menuPanel.add(logoutBtn, gbc);
 
   // Actions des boutons
   newPrestationBtn.addActionListener(e -> showPrestationTypeSelection());
   viewPrestationsBtn.addActionListener(e -> showPrestationsList());
+  generateInvoicesBtn.addActionListener(e -> showFactureGenerationDialog());
   statisticsBtn.addActionListener(e -> showStatistics());
   logoutBtn.addActionListener(e -> {
    isAuthenticated = false;
@@ -335,6 +340,11 @@ public class MainWindow extends JFrame {
  private void showStatistics() {
   JOptionPane.showMessageDialog(this, "Fonctionnalite statistiques a implementer !", "Information",
     JOptionPane.INFORMATION_MESSAGE);
+ }
+
+ private void showFactureGenerationDialog() {
+  FactureFormDialog dialog = new FactureFormDialog(this);
+  dialog.setVisible(true);
  }
 
  private void showFormationForm() {

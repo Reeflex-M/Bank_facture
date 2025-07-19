@@ -166,3 +166,9 @@ Le code reste simple et lisible avec :
 - Gestion d'erreurs avec messages clairs
 - Architecture propre avec pattern Singleton
 - Séparation des responsabilités (connexion, auth, prestations)
+
+file to add
+openpdf
+consultation
+mainwinwos
+bilan

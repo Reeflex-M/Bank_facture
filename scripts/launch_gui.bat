@@ -7,7 +7,7 @@ cd /d "%~dp0.."
 
 echo [1/3] Compilation des classes Java...
 if not exist "build" mkdir build
-javac -cp "lib\mysql-connector-java.jar;src" -d build src\MainGUI.java src\gui\*.java src\AuthManager.java src\Consultation.java src\DatabaseManager.java src\Formation.java src\Prestation.java src\PrestationManager.java
+javac -cp "lib\mysql-connector-java.jar;src" -d build src\MainGUI.java src\gui\*.java src\AuthManager.java src\Consultation.java src\DatabaseManager.java src\Formation.java src\Prestation.java src\PrestationManager.java src\FactureManager.java
 
 if %ERRORLEVEL% neq 0 (
     echo ERREUR: Échec de la compilation !

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Facture - aze</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .title { font-size: 28px; font-weight: bold; color: #2980b9; margin-bottom: 20px; }
+        .info { margin-bottom: 20px; }
+        .client-info { background-color: #f8f9fa; padding: 15px; border-left: 4px solid #2980b9; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2980b9; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .total { text-align: right; font-size: 18px; font-weight: bold; margin: 20px 0; color: #2980b9; }
+        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #666; }
+        .print-btn { background-color: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 20px 0; }
+        @media print { .print-btn { display: none; } body { margin: 20px; } }
+    </style>
+</head>
+<body>
+    <button class='print-btn' onclick='window.print()'>Imprimer / Enregistrer en PDF</button>
+    <div class='header'>
+        <h1 class='title'>FACTURE</h1>
+    </div>
+    <div class='info'>
+        <strong>Micro Entrepreneur</strong><br>
+        Email: contact@entrepreneur.fr<br>
+        Date: 27/06/2025
+    </div>
+    <div class='client-info'>
+        <strong>FacturÃ© Ã  :</strong> aze<br>
+        <strong>PÃ©riode :</strong> juin 2025
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>DÃ©tails</th>
+                <th>Montant (â‚¬)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>27/06/2025</td>
+                <td>aze (aze)</td>
+                <td>Formation</td>
+                <td>8,0h Ã  50â‚¬/h</td>
+                <td>400,00</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class='total'>
+        TOTAL: 400,00 â‚¬
+    </div>
+    <div class='footer'>
+        <p>Merci pour votre confiance !</p>
+        <p>Facture gÃ©nÃ©rÃ©e automatiquement le 27/06/2025</p>
+    </div>
+</body>
+</html>
